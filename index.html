@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Text to Speech Converter</title>
+  <style>
+    :root {
+       --white: #ffffff;
+       --light-grey: #edf0f1;
+       --violet: #655be1;
+       --dark-violet: #5146e1;
+       --black: #21232a;
+     }
+     
+    * {
+        box-sizing: border-box;
+        padding: 0px;
+        margin: 0px;
+    }
+    
+    body {
+        background: var(--black);
+        height: 100vh;
+        width: 100%;
+        padding: 10px;
+    }
+    
+    html {
+        
+    }
+    .container{
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        aspect-ratio: 9/16;
+       
+         
+        h1{
+            margin-bottom: 10px;
+            font-family: "Courier New";
+            color: var(--white);
+            font-size:40px;
+            background: linear-gradient(0deg,#fff,#129363,#293840);
+            background-clip: text;
+            color: transparent;
+        }
+        textarea {
+           width: clamp(50%,85%,100%);
+           aspect-ratio:16/9;
+           margin-bottom: 20px;
+           border-radius: 15px;
+           border: 2px solid #3c4043;
+           font-size: 18px;
+           line-height: 1.5;
+           outline: none;
+           font-weight: bold;
+           color: var(--white);
+           padding: 5px 10px 5px 10px;
+           background-color: #303134;
+        }
+        
+        textarea:focus {
+               border:none;
+               border-bottom:2px solid black;
+               padding:15px;
+               box-shadow:2px 2px 3px #001;
+               
+            }
+        .convertBtn {
+            width: clamp(50%,85%,100%);
+            height:45px;
+            border-radius:8px;
+            border: none;
+            box-shadow: inset -2px -2px 3px
+            gray, 2px 2px 3px #001;
+            font-weight: 600;
+            font-family: Courier;
+        }
+                
+        button:active {
+            box-shadow: inset -2px -2px 3
+            gray, 1px 1px 1px #001;
+        }
+    }
+    ::placeholder{
+        color:var(--white);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+     <h1>Optimal Reader</h1>
+     <textarea placeholder="Enter text to convert to Speech..." id="textToConvert"></textarea>
+     <button id="convertBtn" class="convertBtn">Convert</button>
+  </div>
+  <script>
+    const convertBtn = document.getElementById('convertBtn');
+    
+    // Function to convert text to speech
+    const convertToSpeech = () => {
+      const textToConvert = document.getElementById('textToConvert').value;
+      if (textToConvert.trim() !== '') {
+        // Create SpeechSynthesisUtterance object
+        const utterance = new SpeechSynthesisUtterance(textToConvert);
+        // Get selected voice from the list
+        const voices = window.speechSynthesis.getVoices();
+        utterance.voice = voices[Math.floor(Math.random() * voices.length)];
+        // Highlight text as it's being read
+        utterance.onboundary = (event) => {
+          outputDiv.innerHTML = textToConvert.slice(event.charIndex);
+          outputDiv.scrollTop = outputDiv.scrollHeight;
+        };
+        // Start speech synthesis
+        window.speechSynthesis.speak(utterance);
+      }
+    };
+
+    // Load voices when available
+    window.speechSynthesis.onvoiceschanged = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        convertBtn.disabled = false;
+      }
+    };
+
+    // Add event listener to the convert button
+    convertBtn.addEventListener('click', convertToSpeech);
+  </script>
+</body>
+</html>
